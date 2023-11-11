@@ -12,5 +12,4 @@ api = Api(app)
 
 
 #######################################################3
-from app.models.user import User
-from app.models.category import Category
+from app.models import user,category
