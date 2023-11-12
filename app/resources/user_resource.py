@@ -10,8 +10,9 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 class RegistrationUser(Resource):
     def post(self):
         data = request.get_json()
-        print("##############",data.values())
-        new_user=User(*data.values(),password_hash=sha256_crypt.hash(data['password']))
+        password=sha256_crypt.hash(data['password'])
+        del data['password']
+        new_user = User(**data, password_hash=password)
         try:
             access_token = create_access_token(identity=new_user.id)
             db.session.add(new_user)
@@ -20,11 +21,11 @@ class RegistrationUser(Resource):
         except Exception as e:
             # Handle exceptions, such as database errors
             db.session.rollback()
-            return jsonify({'message': 'Error creating user'}), 500
-    
-
+            return jsonify({'message': 'Error creating user'}, 500)
+        
+        
  
-    
+
     
     
     
