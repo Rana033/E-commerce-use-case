@@ -12,4 +12,5 @@ api = Api(app)
 
 
 #######################################################3
-from app.models import user,category
+from app.resources import category_resource,user_resource,product_resource,cart_resource,favourite_resource
+
