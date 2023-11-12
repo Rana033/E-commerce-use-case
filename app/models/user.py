@@ -14,7 +14,7 @@ class User(db.Model):
     name=db.Column(db.String,nullable=False)
     user_name=db.Column(db.String,unique=True,nullable=False)
     user_email=db.Column(db.String,unique=True,nullable=False)
-    passward_hash=db.Column(db.String,nullable=False)
+    password_hash=db.Column(db.String,nullable=False)
     role=db.Column(db.Enum(RoleEnum),nullable=False)
     created_at=db.Column(db.DateTime,nullable=False,default=datetime.now())
     avatar_id=db.Column(db.String)
