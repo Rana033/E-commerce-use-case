@@ -18,4 +18,15 @@ class User(db.Model):
     role=db.Column(db.Enum(RoleEnum),nullable=False)
     created_at=db.Column(db.DateTime,nullable=False,default=datetime.now())
     avatar_id=db.Column(db.String)
+    
+    def to_dict(self):
+        return {
+            'id':self.id,
+            'name':self.name,
+            'user_name':self.user_name,
+            'user_email':self.user_email,
+            'password':self.password,
+            'role':self.role.value if isinstance(self.role, RoleEnum) else None,
+            'avatar_id':self.avatar_id,
+        }
 
