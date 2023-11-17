@@ -4,6 +4,7 @@ from app import db,api,jwt
 from app.models.user import User,RoleEnum
 from passlib.hash import sha256_crypt
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from app.resources import crud
 
 ############################################
 
@@ -47,11 +48,7 @@ class UserAll(Resource):
                 return jsonify({'message':'invalid email or password'},401)
 
     def get(self):
-        users=db.session.query(User).all()
-        if len(users)==0:
-            return jsonify({'error': 'not found'},404)
-        user_list=[user.to_dict() for user in users]    
-        return jsonify(user_list)
+        return crud.get_all(User)
     
     
     
