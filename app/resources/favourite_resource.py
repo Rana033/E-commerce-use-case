@@ -8,7 +8,7 @@ from app.resources import crud
 
 
 class FavouriteResource(Resource):
-    #create product
+    #create favourite
 
     @jwt_required()
     def post(self):
@@ -23,7 +23,7 @@ class FavouriteResource(Resource):
             return jsonify({'error': f'An error occurred while creation: {str(e)}'}, 500)
         
         
-    #get all product
+    #get all favourites
     def get(self):
         return crud.get_all(Favourite)
 
@@ -31,11 +31,11 @@ class FavouriteResource(Resource):
 
 
 class FavouriteResourceID(Resource):
-    #get product by id
+    #get favourite by id
     def get(self,id):
         return crud.get_one_entity(Favourite,id)
     
-    #delete product
+    #delete favourite
     @jwt_required()
     def delete(self,id):
         try:
@@ -54,5 +54,5 @@ class FavouriteResourceID(Resource):
         
         
         
-api.add_resource(FavouriteResource, '/product')
-api.add_resource(FavouriteResourceID, '/product/<int:id>')
+api.add_resource(FavouriteResource, '/favourite')
+api.add_resource(FavouriteResourceID, '/favourite/<int:id>')
