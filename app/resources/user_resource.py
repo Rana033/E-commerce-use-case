@@ -26,8 +26,7 @@ class RegistrationUser(Resource):
         except Exception as e:
             # Handle exceptions, such as database errors
             db.session.rollback()
-            print(str(e))
-            return jsonify({'message': 'Error creating user'}, 500)
+            return jsonify({'message': f'Error creating user \n {str(e)}'}, 500)
         
  
 
@@ -45,7 +44,7 @@ class UserAll(Resource):
                 return jsonify({'message':'invalid email or password'},401)
 
         except Exception as e:
-                return jsonify({'message':'invalid email or password'},401)
+                return jsonify({'message':f'An error occurred while login: {str(e)}'},401)
 
     def get(self):
         return crud.get_all(User)
@@ -60,56 +59,72 @@ class UserBy(Resource):
 
     
     def get(self):
-        role=request.get_json()
-        if not role:
-            return jsonify({'error': 'Role parameter is required'}, 400)
-        users=db.session.query(User).filter(User.role==role['role']).all()
-        if len(users)==0:
-            return jsonify({'error': 'not found'},404)
-        user_list=[user.to_dict() for user in users]    
-        return jsonify(user_list)
+        try:
+            role=request.get_json()
+            if not role:
+                return jsonify({'error': 'Role parameter is required'}, 400)
+            users=db.session.query(User).filter(User.role==role['role']).all()
+            if len(users)==0:
+                return jsonify({'error': 'not found'},404)
+            user_list=[user.to_dict() for user in users]    
+            return jsonify(user_list)
+        except Exception as e:
+            return jsonify({'error': f'An error occurred while retrieving all data: {str(e)}'}, 500)
+    
     
     @jwt_required()
     def get(self):
-        current_user_id = get_jwt_identity()
-        if (
-            current_user := db.session.query(User)
-            .filter(User.id == current_user_id)
-            .first()
-        ):
-            return jsonify(current_user.to_dict())
-        else:
-            return jsonify({'message': 'User not found'}, 404)
+        try:
+            current_user_id = get_jwt_identity()
+            if (
+                current_user := db.session.query(User)
+                .filter(User.id == current_user_id)
+                .first()
+            ):
+                return jsonify(current_user.to_dict())
+            else:
+                return jsonify({'message': 'User not found'}, 404)
+        except Exception as e:
+            return jsonify({'error': f'An error occurred while retrieving data: {str(e)}'}, 500)
     
     
     @jwt_required()
     def put(self):
-        data = request.get_json()
-        current_user_id = get_jwt_identity()
+        try:
+            data = request.get_json()
+            current_user_id = get_jwt_identity()
 
-        print(current_user_id)
-        user = db.session.query(User).get(current_user_id)
-        if not user:
-            return jsonify({'error': 'User not found'}, 404)
+            print(current_user_id)
+            user = db.session.query(User).get(current_user_id)
+            if not user:
+                return jsonify({'error': 'User not found'}, 404)
 
-        for key, value in data.items():
-            setattr(user, key, value)
-        db.session.commit()
-        return jsonify({'message': 'user is updated successfully'}, 200)
+            for key, value in data.items():
+                setattr(user, key, value)
+            db.session.commit()
+            return jsonify({'message': 'user is updated successfully'}, 200)
+        except Exception as e:
+                return jsonify(
+                    {'error': f'An error occurred while updating: {str(e)}'},
+                    500,
+                )
     
     
     @jwt_required()
     def delete(self):
-        current_user_id = get_jwt_identity()
-        if not (
-            current_user := db.session.query(User)
-            .filter(User.id == current_user_id)
-            .delete()
-        ):
-            return jsonify({'error':'delete user failed'},400)
-        db.session.commit()
-        return jsonify({'message':'user is deleted successfully'},200)
-    
+        try:
+            current_user_id = get_jwt_identity()
+            if not (
+                current_user := db.session.query(User)
+                .filter(User.id == current_user_id)
+                .delete()
+            ):
+                return jsonify({'error':'delete user failed'},400)
+            db.session.commit()
+            return jsonify({'message':'user is deleted successfully'},200)
+        except Exception as e:
+            return jsonify({'error': f'An error occurred while deleting: {str(e)}'}, 500)
+        
 api.add_resource(RegistrationUser, '/user')
 api.add_resource(UserAll, '/user/all')
 api.add_resource(UserBy, '/user/by')
